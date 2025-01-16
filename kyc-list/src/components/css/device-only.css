@@ -1,0 +1,41 @@
+@media all and (max-width:1368px){
+}
+
+@media all and (max-width:1280px){
+}
+
+@media all and (max-width:1200px){
+    .container {max-width:100%;}
+}
+
+@media all and (max-width:1024px){
+}
+
+@media all and (max-width:992px){
+}
+
+@media all and (max-width:768px){
+    body {font-size:16px;}
+    h1 {font-size:40px;}
+    h2 {font-size:38px;}
+    h3 {font-size:24px;}
+    h4 {font-size:18px;}
+    label {font-size:18px;}
+    p {font-size:16px;}
+}
+
+@media all and (max-width:767px){
+    h1 {font-size:30px;}
+    h2 {font-size:26px;}
+    h3 {font-size:22px;}
+    h4 {font-size:18px;}
+}
+
+@media all and (max-width:576px){
+}
+
+@media all and (max-width:480px){
+}
+
+@media all and (max-width:360px){
+}

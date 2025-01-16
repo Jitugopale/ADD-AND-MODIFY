@@ -1,0 +1,161 @@
+:root {
+    --bs-primary: #1E3A8A;
+    --bs-secondary: #F97316;
+    --bs-dark: #111;
+    --bs-dark-one: #1F2937;
+    --bs-gray-light:#E5E7EB;
+    --bs-success: #38BDF8;
+    --bs-info: #10B981;
+    --bs-warning: #F3F4F6;
+    --bs-danger: #DE3434;
+    --bs-light: #f8f9fa;
+
+    --bs-dark: #111;
+    --bs-dark-one: #1F2937;
+
+    --bs-body-font-family: 'Inter', sans-serif;
+    --bs-heading-family: 'Poppins', sans-serif;
+    --bs-body-font-size: 16px;
+    --bs-body-font-weight: 400;
+    --bs-body-line-height: 1.5;
+    --bs-body-color: #111;
+    --bs-body-bg: #fff;
+    --bs-heading-text-color:#142441;
+  }
+
+  
+  body {
+    font-size:var(--bs-body-font-size);
+    font-family: var(--bs-body-font-family);
+    font-weight:var(--bs-body-font-weight);
+    line-height:1.5;
+    color:var(--bs-dark);
+}
+
+/* Common CSS Start */
+h1,h2,h3,h4,h5,h6 {font-family: var(--bs-heading-family); margin:0px; font-weight:600; color:var(--bs-dark); line-height: 1.2;}
+h1 {font-size:60px;}
+h2 {font-size:48px;}
+h3 {font-size:32px;}
+h4 {font-size:24px;}
+h5 {font-size:20px;}
+h6 {font-size:16px;}
+p {opacity:0.8;}
+.btn, .btn:hover, .btn:focus {border-radius:8px; padding:8px 30px; border-color:var(--bs-primary); font-family:var(--bs-heading-family); font-weight:500; font-size:16px;}
+.btn-primary {background:var(--bs-primary); overflow:hidden;}
+.btn-primary:hover, .btn-primary:focus {background:var(--bs-white); color:var(--bs-primary);}
+.btn-secondary {background:var(--bs-white); color:var(--bs-primary); border-color:var(--bs-primary);}
+.btn-secondary:hover, .btn-secondary:focus {background:var(--bs-primary); color:var(--bs-white);}
+.mb-6 {margin-bottom:80px;}
+.gx-6 {--bs-gutter-x: 5rem;}
+a, a:hover, a:focus {text-decoration:none; transition: all 0.35s ease-in-out; transition: all 0.35s ease-in-out; color:var(--bs-primary); font-family:var(--bs-heading-family); font-weight:500;}
+.card {border-radius:8px;}
+.section-ttl span {color:var(--bs-primary);}
+.g-4, .gx-4 {--bs-gutter-x: 40px;}
+
+.form-control {height:44px; border-color:#CFCFCF; resize:none;}
+label {font-size:16px; font-weight:600;}
+
+/*Navbar CSS Start*/
+header {border-bottom:5px solid var(--bs-primary); padding:5px 0px; box-shadow: 0 8px 25px 0 rgb(0 0 0 / 15%);}
+.navbar {padding:0px;}
+header .logo a img {width:150px;}
+header .user li i {margin-right:10px;}
+.profile img {width:40px; height:40px; border-radius:100%; border:1px solid #c4c4c4;}
+
+/* Search Section CSS Start */
+.search {position:relative;}
+.search span {position:absolute; top:0; bottom:0; right:16px; display:flex; align-items:center; height:100%; cursor:pointer; opacity:0.5; font-size:18px;}
+/* Tab to Dropdown CSS Start */
+.tab {
+  overflow: hidden;
+  background: rgba(31, 124, 178, 0.10);
+  padding:10px;
+  border-radius:8px;
+
+  transition: all 3s;
+}
+.tab button {
+  border:none;
+  border-radius:4px;
+}
+.tab button:hover {
+  background:var(--bs-primary);
+  color:var(--bs-white);
+  border-radius:4px;
+}
+.tab button.active {
+  background: var(--bs-primary);
+  color: #ffffff;
+  border-radius:4px;
+}
+
+.tabcontent {
+  display: none;
+  border-top: none;
+  margin-top:60px;
+}
+
+.is-hidden {
+  display: none !important;
+}
+
+.is-desktop {
+  display: block;
+}
+@media (max-width: 768px) {
+  .is-desktop {
+    display: none !important;
+  }
+}
+
+.is-mobile {
+  display: none !important;
+}
+@media (max-width: 768px) {
+  .is-mobile {
+    display: block !important;
+  }
+}
+
+select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  /* Remove default arrow */
+  width: 100%;
+  padding: 1rem;
+  font-size:16px;
+  background: rgba(31, 124, 178, 0.08);
+  border: 1px solid #1F7CB2;
+  border-radius:8px;
+  font-family:var(--bs-heading-family);
+  font-weight:500;
+}
+
+select::-ms-expand {
+  display: none;
+}
+
+.select {
+  position: relative;
+}
+.tab-btn {gap:2rem;}
+@media (max-width: 768px) {
+  .select:after {
+    content: "";
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cg stroke='none'%3E%3Cpath d='M21.293,12.293,16,17.586l-5.293-5.293a1,1,0,0,0-1.414,1.414l6,6a1,1,0,0,0,1.414,0l6-6a1,1,0,0,0-1.414-1.414Z' fill='%23000000'%3E%3C/path%3E%3C/g%3E%3C/svg%3E");
+    background-position: center;
+    background-size: contain;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    right: 1rem;
+    pointer-events: none;
+    width: 32px;
+    height: 32px;
+  }
+}
+
+/* Proof View Section CSS Start */
+.proof-wrapper img {width:100%;}
