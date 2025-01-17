@@ -2,6 +2,7 @@ import qs from 'qs';  // Import qs to handle query string serialization
 import axios from 'axios';
 import DATA from '../models/UserData.js'; // Assuming you have a KYC model
 import VerificationCount from "../models/VerificationCount.js"
+import RELATED from '../models/Relatedusers.js'; // Update the path accordingly
 // export const kycUserdata = async (req, res) => {
 //   const { CUSTNO } = req.body;
 
@@ -277,6 +278,122 @@ import VerificationCount from "../models/VerificationCount.js"
 //   }
 // }
 
+
+//ALL Live main
+// export const kycUserdata = async (req, res) => {
+//   try {
+//     const { CUSTNO } = req.body;
+
+//     // Build query parameters for both API calls
+//     const queryParams = qs.stringify({ CUSTNO });
+
+//     // Call both APIs concurrently using Promise.all
+//     const [apiResponse1, apiResponse2] = await Promise.all([
+//       axios.get(`http://192.168.20.151:90/7064/frmkycdetails.aspx?${queryParams}`),
+//       axios.get(`http://192.168.20.151:90/7064/FrmShowUploadedImg.aspx?${queryParams}`) // Second API endpoint
+//     ]);
+
+//     // Process the first API response
+//     const response1Data = apiResponse1.data;
+//     // Process the second API response
+//     const response2Data = apiResponse2.data;
+
+//     const custno = req.body.CUSTNO;
+//     await updateVerificationCount('user');
+
+//     // Check if the data exists from the first API
+//     if (response1Data && Array.isArray(response1Data) && response1Data.length > 0) {
+//       const {
+//         NAME,
+//         DOB,
+//         MOBNO,
+//         UID,
+//         HOUSE,
+//         LOC,
+//         VTC,
+//         District,
+//         City,
+//         Pin,
+//         StateCode,
+//         FatherName,
+//         GENDER,
+//         DateOfApplication,
+//         PAN,
+//         RELADDLINE1,
+//         RELADDLINE2,
+//         RELADDLINE3,
+//         RELDistrict,
+//         RELCity,
+//         RELPin,
+//         RELStateCode,
+//         Type,
+//         RegiCerti,
+//         Certi_Inco
+//       } = response1Data[0];  
+
+//       // Check if this record already exists in the database using CUSTNO
+//       let UserData = await DATA.findOne({ custno });
+
+//       // if (UserData) {
+//       //   // If user exists, return the existing user data with a message
+//       //   return res.json({ message: "User already exists", UserData });
+//       // }
+//       if (!UserData) {
+
+//       // If no existing record, create a new UserData entry
+//       UserData = new DATA({
+//         custno,
+//         NAME,
+//         DOB,
+//         MOBNO,
+//         UID,
+//         HOUSE,
+//         LOC,
+//         VTC,
+//         District,
+//         City,
+//         Pin,
+//         StateCode,
+//         FatherName,
+//         GENDER,
+//         DateOfApplication,
+//         PAN,
+//         RELADDLINE1,
+//         RELADDLINE2,
+//         RELADDLINE3,
+//         RELDistrict,
+//         RELCity,
+//         RELPin,
+//         RELStateCode,
+//         Type,
+//         RegiCerti,
+//         Certi_Inco,
+//         // Add the second API response data to the user data
+//         Photo: response2Data[0]?.Photo || '',
+//         Pan: response2Data[0]?.Pan || '',
+//         Adhar: response2Data[0]?.Adhar || '',
+//         Inco_Certi: response2Data[0]?.Inco_Certi || '',
+//         RegiCerti: response2Data[0]?.RegiCerti || ''
+//       });
+
+//       // Save the new document to the database
+//       await UserData.save();
+//     }
+
+//       // Send the response after saving the data
+//       res.json({ message: "KYC details fetched and saved successfully", UserData, apiResponse2: response2Data });
+
+//     } else {
+//       // Handle error if no data is returned or the format is incorrect
+//       res.status(400).json({ error: "Invalid or missing data from the first API response" });
+//     }
+
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ error: "Failed to fetch KYC details from both APIs", details: err.message });
+//   }
+// }
+
 export const kycUserdata = async (req, res) => {
   try {
     const { CUSTNO } = req.body;
@@ -326,59 +443,67 @@ export const kycUserdata = async (req, res) => {
         Type,
         RegiCerti,
         Certi_Inco
-      } = response1Data[0];  // Assuming data is an array and we're interested in the first object
+      } = response1Data[0];
 
       // Check if this record already exists in the database using CUSTNO
       let UserData = await DATA.findOne({ custno });
 
-      // if (UserData) {
-      //   // If user exists, return the existing user data with a message
-      //   return res.json({ message: "User already exists", UserData });
-      // }
       if (!UserData) {
+        // If no existing record, create a new UserData entry with first API response data
+        UserData = new DATA({
+          custno,
+          NAME,
+          DOB,
+          MOBNO,
+          UID,
+          HOUSE,
+          LOC,
+          VTC,
+          District,
+          City,
+          Pin,
+          StateCode,
+          FatherName,
+          GENDER,
+          DateOfApplication,
+          PAN,
+          RELADDLINE1,
+          RELADDLINE2,
+          RELADDLINE3,
+          RELDistrict,
+          RELCity,
+          RELPin,
+          RELStateCode,
+          Type,
+          RegiCerti,
+          Certi_Inco
+        });
 
-      // If no existing record, create a new UserData entry
-      UserData = new DATA({
-        custno,
-        NAME,
-        DOB,
-        MOBNO,
-        UID,
-        HOUSE,
-        LOC,
-        VTC,
-        District,
-        City,
-        Pin,
-        StateCode,
-        FatherName,
-        GENDER,
-        DateOfApplication,
-        PAN,
-        RELADDLINE1,
-        RELADDLINE2,
-        RELADDLINE3,
-        RELDistrict,
-        RELCity,
-        RELPin,
-        RELStateCode,
-        Type,
-        RegiCerti,
-        Certi_Inco,
-        // Add the second API response data to the user data
+        // Save the first part of the user data
+        await UserData.save();
+      }
+
+      // Now handle the second API response and store it separately
+      const secondApiData = {
         Photo: response2Data[0]?.Photo || '',
         Pan: response2Data[0]?.Pan || '',
         Adhar: response2Data[0]?.Adhar || '',
         Inco_Certi: response2Data[0]?.Inco_Certi || '',
-        RegiCerti: response2Data[0]?.RegiCerti || ''
-      });
+        RegiCertiFromAPI2: response2Data[0]?.RegiCerti || '' // Use RegiCerti from the second API
+      };
 
-      // Save the new document to the database
+      // Update the existing user data with the second API data
+      UserData.Photo = secondApiData.Photo;
+      UserData.Pan = secondApiData.Pan;
+      UserData.Adhar = secondApiData.Adhar;
+      UserData.Inco_Certi = secondApiData.Inco_Certi;
+      UserData.RegiCertiFromAPI2 = secondApiData.RegiCertiFromAPI2;
+
+      // Save the updated user data with both the first and second API response data
       await UserData.save();
-    }
 
       // Send the response after saving the data
-      res.json({ message: "KYC details fetched and saved successfully", UserData, apiResponse2: response2Data });
+      res.json({ message: "KYC details fetched and saved successfully", UserData, secondApiData });
 
     } else {
       // Handle error if no data is returned or the format is incorrect
@@ -390,6 +515,7 @@ export const kycUserdata = async (req, res) => {
     res.status(500).json({ error: "Failed to fetch KYC details from both APIs", details: err.message });
   }
 }
+
 
 export const kycUpdatedata = async (req, res) => {
   const { custno, NAME, DOB, MOBNO, UID, HOUSE, LOC, VTC, District, City, Pin, StateCode, FatherName, GENDER, DateOfApplication, PAN, RELADDLINE1, RELADDLINE2, RELADDLINE3, RELDistrict, RELCity, RELPin, RELStateCode, Type, RegiCerti, Certi_Inco } = req.body; 
@@ -432,3 +558,100 @@ export const updateVerificationCount = async (verificationType) => {
     console.error('Error updating verification count:', error.message);
   }
 };
+
+export const submitRelatedData = async (req, res) => {
+  try {
+    const {
+      rel_custno, 
+      rel_Individual, 
+      rel_NAME,
+      rel_DOB,
+      rel_MOBNO,
+      rel_UID,
+      rel_HOUSE,
+      rel_LOC,
+      rel_VTC,
+      rel_District,
+      rel_Pin,
+      rel_State,
+      rel_Subdistrict
+    } = req.body;
+
+    // Check if the user already exists in the database based on custno or other unique identifier
+    const existingUser = await RELATED.findOne({ rel_custno });
+
+    if (existingUser) {
+      return res.status(400).json({ message: 'User already exists in the database' });
+    }
+
+    // If the user doesn't exist, create a new one
+    const newUser = new RELATED({
+      rel_custno,
+      rel_Individual,
+      rel_NAME,
+      rel_DOB,
+      rel_MOBNO,
+      rel_UID,
+      rel_HOUSE,
+      rel_LOC,
+      rel_VTC,
+      rel_District,
+      rel_Pin,
+      rel_State,
+      rel_Subdistrict
+    });
+
+    // Save the new user to the database
+    await newUser.save();
+    res.status(201).json({ message: 'Data submitted successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error saving data', error: error.message });
+  }
+};
+
+
+
+
+export const relatedUpdatedata = async (req, res) => {
+  const { 
+    rel_custno, 
+    rel_Individual, 
+    rel_NAME,
+    rel_DOB,
+    rel_MOBNO,
+    rel_UID,
+    rel_HOUSE,
+    rel_LOC,
+    rel_VTC,
+    rel_District,
+    rel_Pin,
+    rel_State,
+    rel_Subdistrict} = req.body; 
+  try {
+      const user = await RELATED.findOneAndUpdate(
+        { rel_custno },
+        {
+          rel_Individual, 
+          rel_NAME,
+          rel_DOB,
+          rel_MOBNO,
+          rel_UID,
+          rel_HOUSE,
+          rel_LOC,
+          rel_VTC,
+          rel_District,
+          rel_Pin,
+          rel_State,
+          rel_Subdistrict
+        },
+        { new: true, runValidators: true }
+      );
+      if (user) {
+          res.status(200).json({ success: true, data: user });
+      } else {
+          res.status(404).json({ success: false, message: 'User not found' });
+      }
+  } catch (error) {
+      res.status(500).json({ success: false, error: error.message });
+  }
+}

@@ -8,11 +8,55 @@ import adhar from "./images/adhar.jpg";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import Logout from "./Logout";
+import { useNavigate } from 'react-router-dom';
 
 const Dashboard = () => {
   const [kycData, setKycData] = useState(null);
-  const [userData, setUserData] = useState({  NAME: "", // Set a default value
+  const [formData, setFormData] = useState({
+    rel_custno: '',
+    rel_Individual: '',
+    rel_NAME: '',
+    rel_DOB: '',
+    rel_MOBNO: '',
+    rel_UID: '',
+    rel_HOUSE: '',
+    rel_LOC: '',
+    rel_VTC: '',
+    rel_District: '',
+    rel_Pin: '',
+    rel_State: '',
+    rel_Subdistrict: ''
   });
+  
+const [userData, setUserData] = useState({
+  custno: "",
+  NAME: "",
+  DOB: "",
+  MOBNO: "",
+  UID: "",
+  HOUSE: "",
+  LOC: "",
+  VTC: "",
+  District: "",
+  City: "",
+  Pin: "",
+  StateCode: "",
+  FatherName: "",
+  GENDER: "",
+  DateOfApplication: "",
+  RELADDLINE1: "",
+  RELADDLINE2: "",
+  RELADDLINE3: "",
+  RELDistrict: "",
+  RELCity: "",
+  RELPin: "",
+  RELStateCode: "",
+  Type: "",
+  RegiCerti: "",
+  Certi_Inco: "",
+  additionalField1: "",
+  additionalField2: ""
+});
   const [custData, setCustData] = useState(null);
   const [error, setError] = useState(null);
   const [addressVisible, setAddressVisible] = useState(false);
@@ -22,6 +66,11 @@ const Dashboard = () => {
   const [isEditable, setIsEditable] = useState(false); // State to control form editability
   const [isEditMode, setIsEditMode] = useState(false);
   const [updatedUserData, setUpdatedUserData] = useState({});
+  const navigate = useNavigate();
+
+  const handleViewCustomers = () => {
+    navigate('/customers');
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -67,6 +116,26 @@ const Dashboard = () => {
     }
   };
 
+  const handleRelatedChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value
+    });
+  };
+
+  const handleRelatedSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.post('http://localhost:5000/api/data/related', formData);
+      console.log(response.data);
+      alert(response.data.message);
+    } catch (error) {
+      console.error(error);
+      alert('Error submitting data');
+    }
+  };
+
   // const handleInputChange = (e) => {
   //   setUpdatedUserData({ ...updatedUserData, [e.target.name]: e.target.value });
   // };
@@ -82,19 +151,10 @@ const Dashboard = () => {
   };
   const handleChange = (e) => {
     const { name, value } = e.target;
-    
-    // Only update the NAME field
-    if (name === 'NAME') {
-      setUserData({
-        ...userData,
-        NAME: value, // Update only NAME field
-      });
-    } else {
-      setUserData({
-        ...userData,
-        [name]: value, // Update other fields normally
-      });
-    }
+    setUserData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
   };
   
   
@@ -125,6 +185,25 @@ const Dashboard = () => {
       defaultTab.click(); // Trigger the click event to open the 'Legal' tab
     }
   }, []);
+
+  const handleRelatedUpdateSubmit = async (e) => {
+    e.preventDefault();
+    console.log("Submit button clicked"); // Check if this is logged when you submit
+    alert("Submit Clicked");
+  
+    try {
+      await axios.post(
+        "http://localhost:5000/api/data/updatedata",
+        userData // Use userData instead of updatedUserData
+      );
+      setUserData(userData); // Update the local state with userData
+      console.log(userData); // Log the updated userData
+      setIsEditMode(false); // Disable edit mode
+      alert("Data updated successfully");
+    } catch (err) {
+      setError(err.response?.data?.error || "Update failed.");
+    }
+  };
 
   const openTab = (evt, tabName) => {
     const tabcontents = document.querySelectorAll(".tabcontent");
@@ -200,7 +279,7 @@ const Dashboard = () => {
   return (
     <>
       {/* Navbar Section Start  */}
-      <header className="mb-5">
+      <header className="mb-4">
         <nav>
           <div className="container">
             <div className="row align-items-center gy-4">
@@ -247,6 +326,9 @@ const Dashboard = () => {
           </div>
         </nav>
       </header>
+      <div className="mb-2" style={{marginLeft:'117px'}}>
+        <button onClick={handleViewCustomers}>View Customers</button>
+      </div>
 
       {/* legal Customer Search Section Start */}
       <section>
@@ -394,6 +476,7 @@ const Dashboard = () => {
                   </div>
                 </div>
                 {/* {isEditMode && ( */}
+                {userData && (
 
                 <div id="tab1" className="tabcontent">
                   {/* <form onSubmit={handleSubmit} action> */}
@@ -427,11 +510,11 @@ const Dashboard = () => {
                       <div className="col-xxl-12 col-xl-12 col-lg-12 col-md-12 col-12 mb-3">
                         <input
                           type="text"
-                          name="Name"
+                          name="NAME"
                           disabled={!isEditMode} // Disable editing when not in editable mode
-                          value={isEditMode ? userData.Name : (userData ? userData.NAME : "Enter Name")}
+                          value={userData.NAME}  // Use empty string if the value is undefined
                           className="form-control"
-                          id="exampleFormControlInput2"
+                          id="NAME"
                           placeholder="Enter Name"
                           onChange={handleChange}
                         />
@@ -442,7 +525,9 @@ const Dashboard = () => {
                         <input
                           type="date"
                           className="form-control"
-                          id="exampleFormControlInput3"
+                          id="DOB"
+                          name="DOB"
+                          disabled={!isEditMode} // Disable editing when not in editable mode
                           onChange={handleChange}
                           value={
                             userData && userData.DOB
@@ -455,8 +540,11 @@ const Dashboard = () => {
                         <input
                           type="text"
                           className="form-control"
+                          name="UID"
+                          value={userData.UID}  // Use empty string if the value is undefined
+                          disabled={!isEditMode} // Disable editing when not in editable mode
                           onChange={handleChange}
-                          id="exampleFormControlInput4"
+                          id="UID"
                           placeholder="UID"
                         />
                       </div>
@@ -466,7 +554,10 @@ const Dashboard = () => {
                         <input
                           type="text"
                           className="form-control"
-                          id="exampleFormControlInput3"
+                          disabled={!isEditMode} // Disable editing when not in editable mode
+                          name="RegiCerti"
+                          value={userData.RegiCerti}  // Use empty string if the value is undefined
+                          id="RegiCerti"
                           placeholder="Registration Certificate No"
                           onChange={handleChange}
                         />
@@ -475,7 +566,10 @@ const Dashboard = () => {
                         <input
                           type="text"
                           className="form-control"
-                          id="exampleFormControlInput4"
+                          disabled={!isEditMode} // Disable editing when not in editable mode
+                          id="Certi_Inco"
+                          name="Certi_Inco"
+                          value={userData.Certi_Inco}  // Use empty string if the value is undefined
                           placeholder="Certificate of Incorporation"
                           onChange={handleChange}
                         />
@@ -486,9 +580,11 @@ const Dashboard = () => {
                         <input
                           type="text"
                           className="form-control"
-                          id="exampleFormControlInput3"
+                          disabled={!isEditMode} // Disable editing when not in editable mode
+                          id="MOBNO"
                           placeholder="Mobile Number"
                           onChange={handleChange}
+                          name="MOBNO"
                           value={userData ? userData.MOBNO : "Mobile Number"}
                         />
                       </div>
@@ -496,9 +592,11 @@ const Dashboard = () => {
                         <input
                           type="text"
                           className="form-control"
-                          id="exampleFormControlInput4"
+                          disabled={!isEditMode} // Disable editing when not in editable mode
+                          id="House"
                           placeholder="House"
                           onChange={handleChange}
+                          name="House"
                           value={userData ? userData.HOUSE : "HOUSE"}
                         />
                       </div>
@@ -508,7 +606,9 @@ const Dashboard = () => {
                         <input
                           type="text"
                           className="form-control"
-                          id="exampleFormControlInput3"
+                          disabled={!isEditMode} // Disable editing when not in editable mode
+                          id="LOC"
+                          name="LOC"
                           onChange={handleChange}
                           placeholder="LOC"
                           value={userData ? userData.LOC : "LOC"}
@@ -518,7 +618,9 @@ const Dashboard = () => {
                         <input
                           type="text"
                           className="form-control"
-                          id="exampleFormControlInput4"
+                          disabled={!isEditMode} // Disable editing when not in editable mode
+                          id="VTC"
+                          name="VTC"
                           onChange={handleChange}
                           placeholder="VTC"
                           value={userData ? userData.VTC : "VTC"}
@@ -530,8 +632,10 @@ const Dashboard = () => {
                         <input
                           type="text"
                           className="form-control"
-                          id="exampleFormControlInput3"
+                          disabled={!isEditMode} // Disable editing when not in editable mode
+                          id="District"
                           onChange={handleChange}
+                          name="District"
                           placeholder="District"
                           value={userData ? userData.District : "District"}
                         />
@@ -540,8 +644,11 @@ const Dashboard = () => {
                         <input
                           type="text"
                           className="form-control"
+                          disabled={!isEditMode} // Disable editing when not in editable mode
                           onChange={handleChange}
-                          id="exampleFormControlInput4"
+                          value={userData.City}  // Use empty string if the value is undefined
+                          name="City"
+                          id="City"
                           placeholder="Sub District"
                         />
                       </div>
@@ -551,8 +658,11 @@ const Dashboard = () => {
                         <input
                           type="text"
                           className="form-control"
-                          id="exampleFormControlInput3"
+                          disabled={!isEditMode} // Disable editing when not in editable mode
+                          id="StateCode"
                           onChange={handleChange}
+                          name="StateCode"
+                          value={userData.StateCode}  // Use empty string if the value is undefined
                           placeholder="State"
                         />
                       </div>
@@ -560,8 +670,10 @@ const Dashboard = () => {
                         <input
                           type="text"
                           className="form-control"
-                          id="exampleFormControlInput4"
+                          id="Pin"
+                          disabled={!isEditMode} // Disable editing when not in editable mode
                           onChange={handleChange}
+                          name="Pin"
                           placeholder="Pin Code"
                           value={userData ? userData.Pin : "Pin Code"}
                         />
@@ -574,29 +686,33 @@ const Dashboard = () => {
               </div>
                   </form>
                 </div>
+                                              )}
+
                   {/* )} */}
                           {/* {isEditMode && ( */}
+                      
 
                 <div id="tab2" className="tabcontent">
                   {/* <form action onSubmit={handleSubmit}> */}
-                  <form onSubmit={handleSubmit}>
+                  <form onSubmit={handleRelatedSubmit}>
                     <div className="row">
                       <div className="col-xxl-6 col-xl-6 col-lg-6 col-md-6 col-12 mb-3">
                         <input
                           type="text"
                           className="form-control"
-                          id="ControlInput1"
-                          onChange={handleChange}
+                          name="rel_custno"
+                          id="rel_custno"
+                          onChange={handleRelatedChange}
                           placeholder="Enter Customer No"
-                          value={userData ? userData.custno : "Cust No"}
                         />
                       </div>
                       <div className="col-xxl-6 col-xl-6 col-lg-6 col-md-6 col-12 mb-3">
                         <input
                           type="text"
+                          name="rel_Individual"
                           className="form-control"
-                          id="ControlInput2"
-                          onChange={handleChange}
+                          id="rel_Individual"
+                          onChange={handleRelatedChange}
                           placeholder="Individual Customer"
                         />
                       </div>
@@ -605,25 +721,21 @@ const Dashboard = () => {
                       <div className="col-xxl-6 col-xl-6 col-lg-6 col-md-6 col-12 mb-3">
                         <input
                           type="text"
+                          name="rel_NAME"
                           className="form-control"
-                          id="ControlInput3"
-                          onChange={handleChange}
+                          id="rel_NAME"
+                          onChange={handleRelatedChange}
                           placeholder="Enter Name"
-                          value={userData ? userData.NAME : "Legal Name"}
                         />
                       </div>
                       <div className="col-xxl-6 col-xl-6 col-lg-6 col-md-6 col-12 mb-3">
                         <input
                           type="date"
+                          name="rel_DOB"
                           className="form-control"
-                          id="ControlInput4"
-                          onChange={handleChange}
+                          id="rel_DOB"
+                          onChange={handleRelatedChange}
                           placeholder="Enter Date of Birth"
-                          value={
-                            userData && userData.DOB
-                              ? convertToDateInputFormat(userData.DOB)
-                              : "DOB"
-                          }
                         />
                       </div>
                     </div>
@@ -631,9 +743,10 @@ const Dashboard = () => {
                       <div className="col-xxl-6 col-xl-6 col-lg-6 col-md-6 col-12 mb-3">
                         <input
                           type="text"
+                          name="rel_UID"
                           className="form-control"
-                          onChange={handleChange}
-                          id="ControlInput5"
+                          onChange={handleRelatedChange}
+                          id="rel_UID"
                           placeholder="UID"
                         />
                       </div>
@@ -641,10 +754,10 @@ const Dashboard = () => {
                         <input
                           type="text"
                           className="form-control"
-                          onChange={handleChange}
-                          id="ControlInput8"
+                          name="rel_MOBNO"
+                          onChange={handleRelatedChange}
+                          id="rel_MOBNO"
                           placeholder="Mobile Number"
-                          value={userData ? userData.MOBNO : "Mobile Number"}
                         />
                       </div>
                     </div>
@@ -661,20 +774,20 @@ const Dashboard = () => {
                         <input
                           type="text"
                           className="form-control"
-                          id="ControlInput9"
+                          name="rel_HOUSE"
+                          id="rel_HOUSE"
                           placeholder="House"
-                          onChange={handleChange}
-                          value={userData ? userData.HOUSE : "House"}
+                          onChange={handleRelatedChange}
                         />
                       </div>
                       <div className="col-xxl-6 col-xl-6 col-lg-6 col-md-6 col-12 mb-3">
                         <input
                           type="text"
                           className="form-control"
-                          id="ControlInput10"
-                          onChange={handleChange}
+                          name="rel_LOC"
+                          id="rel_LOC"
+                          onChange={handleRelatedChange}
                           placeholder="LOC"
-                          value={userData ? userData.LOC : "LOC"}
                         />
                       </div>
                     </div>
@@ -683,20 +796,20 @@ const Dashboard = () => {
                         <input
                           type="text"
                           className="form-control"
-                          id="ControlInput11"
-                          onChange={handleChange}
+                          name="rel_VTC"
+                          id="rel_VTC"
+                          onChange={handleRelatedChange}
                           placeholder="VTC"
-                          value={userData ? userData.VTC : "VTC"}
                         />
                       </div>
                       <div className="col-xxl-6 col-xl-6 col-lg-6 col-md-6 col-12 mb-3">
                         <input
                           type="text"
                           className="form-control"
-                          id="ControlInput12"
-                          onChange={handleChange}
+                          name="rel_District"
+                          id="rel_District"
+                          onChange={handleRelatedChange}
                           placeholder="District"
-                          value={userData ? userData.District : "District"}
                         />
                       </div>
                     </div>
@@ -705,8 +818,9 @@ const Dashboard = () => {
                         <input
                           type="text"
                           className="form-control"
-                          id="ControlInput13"
-                          onChange={handleChange}
+                          name="rel_Subdistrict"
+                          id="rel_Subdistrict"
+                          onChange={handleRelatedChange}
                           placeholder="Sub District"
                         />
                       </div>
@@ -714,8 +828,9 @@ const Dashboard = () => {
                         <input
                           type="text"
                           className="form-control"
-                          id="ControlInput14"
-                          onChange={handleChange}
+                          name="rel_State"
+                          id="rel_State"
+                          onChange={handleRelatedChange}
                           placeholder="State"
                         />
                       </div>
@@ -725,10 +840,10 @@ const Dashboard = () => {
                         <input
                           type="text"
                           className="form-control"
-                          id="ControlInput15"
-                          onChange={handleChange}
+                          name="rel_Pin"
+                          id="rel_Pin"
+                          onChange={handleRelatedChange}
                           placeholder="Pin Code"
-                          value={userData ? userData.RELPin : "Pin Code"}
                         />
                       </div>
                     </div>
@@ -738,7 +853,10 @@ const Dashboard = () => {
                 </div>
               </div>
                   </form>
+               
                 </div>
+                                           
+
                   {/* )} */}
                 {/* <div className="row">
                   <div className="col-12 text-center mt-3">
