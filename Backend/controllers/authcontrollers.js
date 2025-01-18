@@ -655,3 +655,26 @@ export const relatedUpdatedata = async (req, res) => {
       res.status(500).json({ success: false, error: error.message });
   }
 }
+
+
+//Add new User
+export const createUser = async (req, res) => {
+  try {
+    const userData = req.body;
+
+    // Check if a user with the same CUSTNO already exists
+    const existingUser = await DATA.findOne({ custno: userData.custno });
+    if (existingUser) {
+      return res.status(400).json({ error: "User with this CUSTNO already exists." });
+    }
+
+    // Create a new user with the provided data
+    const newUser = new DATA(userData);
+    await newUser.save();
+
+    res.status(201).json({ message: "User created successfully", user: newUser });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to create user", details: err.message });
+  }
+};

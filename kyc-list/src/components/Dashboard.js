@@ -65,6 +65,7 @@ const [userData, setUserData] = useState({
   const [message, setMessage] = useState("");
   const [isEditable, setIsEditable] = useState(false); // State to control form editability
   const [isEditMode, setIsEditMode] = useState(false);
+  const [isAddingUser, setIsAddingUser] = useState(false);
   const [updatedUserData, setUpdatedUserData] = useState({});
   const navigate = useNavigate();
 
@@ -193,11 +194,11 @@ const [userData, setUserData] = useState({
   
     try {
       await axios.post(
-        "http://localhost:5000/api/data/updatedata",
-        userData // Use userData instead of updatedUserData
+        "http://localhost:5000/api/data/updaterelated",
+        formData // Use userData instead of updatedUserData
       );
-      setUserData(userData); // Update the local state with userData
-      console.log(userData); // Log the updated userData
+      setFormData(formData); // Update the local state with userData
+      console.log(formData); // Log the updated userData
       setIsEditMode(false); // Disable edit mode
       alert("Data updated successfully");
     } catch (err) {
@@ -248,7 +249,53 @@ const [userData, setUserData] = useState({
   //         identityBtn.removeEventListener("click", () => {});
   //     };
   // }, []);
+  const handleAddUser = (e) => {
+    e.preventDefault();
+    setIsEditMode(true);  // Assuming you have an `isEditMode` state to toggle
+    setUserData({
+      custno: "",
+      NAME: "",
+      DOB: "",
+      MOBNO: "",
+      UID: "",
+      HOUSE: "",
+      LOC: "",
+      VTC: "",
+      District: "",
+      City: "",
+      Pin: "",
+      StateCode: "",
+      FatherName: "",
+      GENDER: "",
+      DateOfApplication: "",
+      RELADDLINE1: "",
+      RELADDLINE2: "",
+      RELADDLINE3: "",
+      RELDistrict: "",
+      RELCity: "",
+      RELPin: "",
+      RELStateCode: "",
+      Type: "",
+      RegiCerti: "",
+      Certi_Inco: "",
+      additionalField1: "",
+      additionalField2: ""
+    });
+  };
 
+  const handleSubmitAddUser = async (e) => {
+    e.preventDefault();
+    setError(""); // Reset error message
+    setMessage(""); // Reset success message
+
+    try {
+      const response = await axios.post('http://localhost:5000/api/data/createUser', userData);
+      setMessage("User added successfully!");
+      setUserData(userData);
+    } catch (err) {
+      setError(err.response?.data?.error || "Failed to add user.");
+    }
+  };
   // Function to handle address button click
   const toggleAddress = () => {
     setPanVisible(false); // Hide PAN section
@@ -438,7 +485,7 @@ const [userData, setUserData] = useState({
             <div className="col-xxl-6 col-xl-6 col-lg-6 col-md-6 col-12 mx-auto mb-5">
               <div className="btns mb-4 text-center">
                 {/* <a href="#" className="btn btn-primary me-3" onClick="toggleForm()">Add</a> */}
-                <a href="#" className="btn btn-primary me-3">
+                <a href="#" className="btn btn-primary me-3" onClick={handleAddUser}>
                   Add
                 </a>
                 {/* <a href="#" className="btn btn-secondary" onClick={handleModify}> */}
@@ -480,7 +527,7 @@ const [userData, setUserData] = useState({
 
                 <div id="tab1" className="tabcontent">
                   {/* <form onSubmit={handleSubmit} action> */}
-                  <form onSubmit={handleSubmit}>
+                  <form onSubmit={isAddingUser ? handleSubmitAddUser : handleSubmit}>
                     <div className="row">
                       <div className="col-xxl-6 col-xl-6 col-lg-6 col-md-6 col-12 mb-3">
                         <input

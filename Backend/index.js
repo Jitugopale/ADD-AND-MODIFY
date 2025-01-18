@@ -1,5 +1,5 @@
 import express from "express";
-import connectToMongo from "./db/db.js";
+import { connectToMongo, connectToSQL } from "./db/db.js";
 import cors from "cors";
 import router from "./routes/authroutes.js"
 import KYC from './models/kycSchema.js'; // Assuming you have a KYC model
@@ -20,6 +20,7 @@ app.use(express.json());
 
 // Connect to MongoDB
 connectToMongo();
+connectToSQL();  // Ensure SQL connection as well
 
 // Proxy route to handle the login request
 

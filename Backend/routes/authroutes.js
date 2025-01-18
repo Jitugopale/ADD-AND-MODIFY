@@ -4,6 +4,7 @@ import { kycUpdatedata } from '../controllers/authcontrollers.js';
 import { updateVerificationCount } from '../controllers/authcontrollers.js';
 import { submitRelatedData } from '../controllers/authcontrollers.js';
 import { relatedUpdatedata } from '../controllers/authcontrollers.js';
+import { createUser } from '../controllers/authcontrollers.js';
 
 const router = express.Router();
 
@@ -13,6 +14,7 @@ router.post('/updatedata', kycUpdatedata);
 router.get('/getcount', updateVerificationCount);
 router.post('/related', submitRelatedData);
 router.post('/updaterelated', relatedUpdatedata);
+router.post('/create-user', createUser);
 
 
 export default router;
